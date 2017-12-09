@@ -95,7 +95,7 @@ public class Address implements Comparable<Address>, Identifiable {
         str.append(Address.class.getName()).append("@").append(System.identityHashCode(this));
 
         str.append("[");
-        str.append(",id:").append(this.id);
+        str.append("id:").append(this.id);
         str.append(",country:").append(_country);
         str.append(",locality:").append(_locality);
         str.append(",code:").append(_code);
