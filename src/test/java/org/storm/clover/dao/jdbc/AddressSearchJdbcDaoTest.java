@@ -8,14 +8,16 @@ import org.storm.clover.dao.AddressSearchDao;
 import org.storm.clover.domain.Address;
 
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Properties;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public class AddressSearchJdbcDaoTest {
@@ -26,8 +28,12 @@ public class AddressSearchJdbcDaoTest {
     @BeforeClass
     public static void init() throws Exception {
         Properties props = new Properties();
-        props.load(new FileInputStream(new File(System.getProperty("user.home"), ".gradle/gradle.properties")));
 
+        // load properties
+        Path path = Paths.get(System.getProperty("user.home"), ".gradle/gradle.properties");
+        props.load(Files.newInputStream(path));
+
+        // init datasource
         MysqlDataSource ds = new MysqlDataSource();
         ds.setURL("jdbc:mysql://localhost:3306/periscope");
         ds.setUser(props.getProperty("flyway.user"));
@@ -45,19 +51,24 @@ public class AddressSearchJdbcDaoTest {
         Address address = null;
         List<Address> addresses;
         long size = 0;
-        while (!(addresses = _dao.nextAfter(address, 1000)).isEmpty()) {
+
+        while (!(addresses = _dao.findAfter(address, 1000)).isEmpty()) {
             assertThat(addresses.size(), lessThanOrEqualTo(1000));
-            size += addresses.size();
+
+            // progress the cursor
             address = addresses.get(addresses.size() - 1);
 
-            addresses.forEach(System.out::println);
+            // capture total size for assertion
+            size += addresses.size();
         }
 
         assertEquals(_dao.count(), size);
     }
 
     @Test
-    public void count() throws Exception {
-        assertThat(_dao.count(), greaterThan(10000L));
+    public void findAll() throws Exception {
+        List<Address> addresses = _dao.findAll();
+        assertNotNull(addresses);
+        assertThat(addresses.size(), greaterThan(10000));
     }
 }

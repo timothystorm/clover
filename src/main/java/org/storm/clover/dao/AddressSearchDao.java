@@ -14,7 +14,9 @@ public interface AddressSearchDao {
      * @param maxSize - max result to return in the collection.
      * @return {@link Address}es after the provided {@link Address} with a maximum size of results, can be empty but not null.
      */
-    List<Address> nextAfter(Address from, int maxSize);
+    List<Address> findAfter(Address from, int maxSize);
+
+    List<Address> findAll();
 
     /**
      * @return count of {@link Address}es in the data source
