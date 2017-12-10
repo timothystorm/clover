@@ -27,6 +27,6 @@ dependencies {
 }
 
 flyway {
-  url = 'jdbc:mysql://localhost:3306/clover?verifyServerCertificate=false&useSSL=true'
-  schemas = ['clover']
+    url = 'jdbc:mysql://localhost:3306/clover?verifyServerCertificate=false&useSSL=true'
+    schemas = ['clover']
 }
