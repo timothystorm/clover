@@ -19,15 +19,44 @@ public class Problem_02 {
     }
 
     public long fibonacciEvenSum(long startAt, long maxInclusive) {
-        long prev = startAt, curr = startAt, sum;
-        long evenSum = 0;
+        long first = startAt, second = startAt, third = 0L, sum = 0L;
 
         do {
-            sum = prev + curr;
-            prev = curr;
-            if ((curr = sum) % 2 == 0) evenSum += sum;
-        } while (curr <= maxInclusive);
+            // calculate
+            if (third % 2 == 0) sum += third;
 
-        return evenSum;
+            // progress
+            first = second;
+            second = third;
+            third = first + second;
+        } while (third < maxInclusive);
+        return sum;
+    }
+
+    public long fibonacciProof(long maxInclusive) {
+        return fibonacciProof(1, maxInclusive);
+    }
+
+    /**
+     * It is easy to prove that every third Fibonacci number is even.  Because this method takes larger progress steps
+     * it can overflow sooner than {@link #fibonacciEvenSum(long, long)}.
+     *
+     * @param startAt
+     * @param maxInclusive
+     * @return
+     */
+    public long fibonacciProof(long startAt, long maxInclusive) {
+        long first = startAt, second = startAt, third = 0L, sum = 0L;
+
+        while (third < maxInclusive) {
+            // calculate
+            sum += third;
+
+            // progress
+            first = (second + third);
+            second = (third + first);
+            third = (first + second);
+        }
+        return sum;
     }
 }
