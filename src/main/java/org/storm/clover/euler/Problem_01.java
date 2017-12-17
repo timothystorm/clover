@@ -25,10 +25,6 @@ public class Problem_01 {
         _multiples = Arrays.stream(multiples).boxed().toArray(Long[]::new);
     }
 
-    public static void main(String[] args) {
-        System.out.println(new Problem_01(1000, 3, 5).sum_lambda());
-    }
-
     public long sum_lambda() {
         return range(1, _end)
                 .filter(i -> Stream.of(_multiples)

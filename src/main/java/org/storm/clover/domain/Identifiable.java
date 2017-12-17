@@ -1,5 +1,7 @@
 package org.storm.clover.domain;
 
+import com.sun.xml.internal.bind.v2.model.core.ID;
+
 import java.lang.reflect.Field;
 import java.util.Objects;
 
@@ -14,6 +16,15 @@ public interface Identifiable {
                 return (long) getIdField(identifiable).get(identifiable);
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(identifiable.getClass() + " not accessible!");
+            }
+        }
+
+        public static long getId(Identifiable identifiable, long fallback){
+            if(identifiable == null) return fallback;
+            try{
+                return getId(identifiable);
+            } catch (Exception e){
+                return fallback;
             }
         }
 

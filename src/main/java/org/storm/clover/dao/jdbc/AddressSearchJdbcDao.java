@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.function.Function;
 
 public class AddressSearchJdbcDao implements AddressSearchDao {
-    private static final String NEXT_QUERY = "SELECT * FROM clover.address WHERE id > ? ORDER BY id LIMIT ?";
     private static final String ALL_QUERY = "SELECT * FROM clover.address";
     private static final String COUNT_QUERY = "SELECT COUNT(*) AS 'count' FROM clover.address";
 
@@ -45,6 +44,8 @@ public class AddressSearchJdbcDao implements AddressSearchDao {
     public List<Address> findAll() {
         try (Connection conn = _dataSource.getConnection();
              PreparedStatement stmt = conn.prepareStatement(ALL_QUERY)) {
+            stmt.setFetchSize(1000);
+
             List<Address> addresses = new ArrayList<>();
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -76,11 +77,10 @@ public class AddressSearchJdbcDao implements AddressSearchDao {
     @Override
     public List<Address> findAfter(Address from, int maxSize) {
         if (maxSize <= 0) throw new IllegalArgumentException("maxSize must be greater than 0!");
+        long id = Identifiable.Utils.getId(from, -1);
 
         try (Connection conn = _dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(NEXT_QUERY)) {
-            stmt.setLong(1, (from == null ? -1 : Identifiable.Utils.getId(from)));
-            stmt.setInt(2, maxSize);
+             PreparedStatement stmt = prepareFindAfterQuery(conn, id, maxSize)) {
 
             List<Address> addresses = new ArrayList<>();
             try (ResultSet rs = stmt.executeQuery()) {
@@ -94,5 +94,12 @@ public class AddressSearchJdbcDao implements AddressSearchDao {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+
+    private PreparedStatement prepareFindAfterQuery(Connection conn, long id, int maxSize) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM clover.address WHERE id > ? ORDER BY id LIMIT ?");
+        ps.setLong(1, id);
+        ps.setInt(2, maxSize);
+        return ps;
     }
 }
