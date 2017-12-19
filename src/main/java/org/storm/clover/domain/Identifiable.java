@@ -17,6 +17,15 @@ public interface Identifiable {
             }
         }
 
+        public static long getId(Identifiable identifiable, long fallback) {
+            if (identifiable == null) return fallback;
+            try {
+                return getId(identifiable);
+            } catch (Exception e) {
+                return fallback;
+            }
+        }
+
         public static void setId(Identifiable identifiable, long id) {
             try {
                 getIdField(identifiable).set(identifiable, id);

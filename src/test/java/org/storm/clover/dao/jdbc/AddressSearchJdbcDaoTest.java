@@ -35,7 +35,8 @@ public class AddressSearchJdbcDaoTest {
 
         // init datasource
         MysqlDataSource ds = new MysqlDataSource();
-        ds.setURL("jdbc:mysql://localhost:3306/periscope");
+        // useCursorFetch=true = cursor-based streaming to retrieve a set number of rows each time
+        ds.setURL("jdbc:mysql://localhost:3306/clover?useCursorFetch=true");
         ds.setUser(props.getProperty("flyway.user"));
         ds.setPassword(props.getProperty("flyway.password"));
         _dataSource = ds;
@@ -48,12 +49,13 @@ public class AddressSearchJdbcDaoTest {
 
     @Test
     public void nextAfter() throws Exception {
+        int fetchSize = 500;
         Address address = null;
         List<Address> addresses;
         long size = 0;
 
-        while (!(addresses = _dao.findAfter(address, 1000)).isEmpty()) {
-            assertThat(addresses.size(), lessThanOrEqualTo(1000));
+        while (!(addresses = _dao.findAfter(address, fetchSize)).isEmpty()) {
+            assertThat(addresses.size(), lessThanOrEqualTo(fetchSize));
 
             // progress the cursor
             address = addresses.get(addresses.size() - 1);
