@@ -33,6 +33,10 @@ public class Problem_02 {
         return sum;
     }
 
+    public long fibonacciProof(long maxInclusive) {
+        return fibonacciProof(1, maxInclusive);
+    }
+
     /**
      * It is easy to prove that every third Fibonacci number is even.  Because this method takes larger progress steps
      * it can overflow sooner than {@link #fibonacciEvenSum(long, long)}.
